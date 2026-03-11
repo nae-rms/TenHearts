@@ -21,6 +21,10 @@ def get_villager_lookup(database) -> dict:
                 for item in row['Loved Movies']:
                         villager_lookup[name][item] = 1
 
+                villager_lookup[name][row['Birthday Season']] = 5
+                villager_lookup[name][row['Birthday Day']] = 5
+                villager_lookup[name][row['Interest']] = 5
+
         return villager_lookup
 
 def get_choices() -> list:
@@ -110,11 +114,10 @@ def run_quiz(database) -> list:
         :return: A list that contain answers to the introduction questions, and the multiple choice one.
         """
         all_answers = []
-        intro_answers = []
         while True:
                 answer = input("What is your favorite season. (Spring, Summer, Fall, Winter): ")
                 if answer.capitalize() in ["Spring", "Summer", "Fall", "Winter"]:
-                        intro_answers.append(answer.capitalize())
+                        all_answers.append(answer.capitalize())
                         break
                 else:
                         print("Choose only from the following choices: Spring, Summer, Fall, Winter")
@@ -123,7 +126,7 @@ def run_quiz(database) -> list:
                 try:
                         answer = int(input("What is your favorite day of the month. (1-28): "))
                         if answer >= 1 and answer <= 28:
-                                intro_answers.append(answer)
+                                all_answers.append(answer)
                                 break
                         else:
                                 print("Choose only from the following range: 1-28")
@@ -135,7 +138,7 @@ def run_quiz(database) -> list:
                 print(f"From the following.\n{interest_choices}")
                 answer = input("What is your interest: ")
                 if answer.capitalize() in interest_choices:
-                        intro_answers.append(answer.capitalize())
+                        all_answers.append(answer.capitalize())
                         break
 
                 else:
@@ -157,16 +160,14 @@ def run_quiz(database) -> list:
                 print(f"From from the following.\n{list(movie_genres.keys())}")
                 answer = input("What is your favorite movie genre: ")
                 if answer.capitalize() in list(movie_genres.keys()):
-                        intro_answers.append(answer.capitalize())
+                        all_answers.append(answer.capitalize())
                         break
 
                 else:
                         print("Choose among the following choices: ")
                         print(list(movie_genres.keys()))
 
-        all_answers.append(intro_answers)
 
-        mul_answers = []
         random_choices = get_choices()
         for choices in random_choices:
                 while True:
@@ -174,7 +175,7 @@ def run_quiz(database) -> list:
                                 print(choices)
                                 answer = int(input("Choose from the following. Answer in 1-5: "))
                                 if answer >= 1 and answer <= 5:
-                                        mul_answers.append(choices[answer-1])
+                                        all_answers.append(choices[answer-1])
                                         break
                                 else:
                                         print("Choose from the following range. (1-5)")
@@ -182,7 +183,6 @@ def run_quiz(database) -> list:
                         except ValueError:
                                 print("Invalid output.")
 
-        all_answers.append(mul_answers)
 
         return all_answers
 
@@ -194,9 +194,10 @@ def calculate_scores(answers: list, villagers_lookup:dict) -> dict:
         :return: A dictionary that has scores for each key (villager name) and value (score)
         """
         all_villager_score = []
+
         for villager in villagers_lookup:
                 score = 0
-                for item in answers[1]:
+                for item in answers:
                         if item in villagers_lookup[villager]:
                                 score += villagers_lookup[villager][item]
 
