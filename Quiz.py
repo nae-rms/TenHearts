@@ -86,7 +86,7 @@ def get_choices() -> list:
                 ]
         }
 
-        category_cap = [7, 7, 3, 4, 14, 3, 4, 2, 3]
+        category_cap = [10, 10, 5, 6, 20, 5, 5, 2, 5]
         count = 0
         random_choices = []
         flat_list = []
@@ -96,7 +96,7 @@ def get_choices() -> list:
                 count += 1
                 flat_list.extend(gift_categories[category])
 
-        random_choices.extend(random.sample(sorted(set(flat_list) - set(random_choices)),28))
+        random_choices.extend(random.sample(sorted(set(flat_list) - set(random_choices)),32))
 
         random.shuffle(random_choices)
         chunk_size = 5
