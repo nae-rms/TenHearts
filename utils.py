@@ -160,7 +160,8 @@ def run_quiz(database) -> list:
                 print(f"From from the following.\n{list(movie_genres.keys())}")
                 answer = input("What is your favorite movie genre: ")
                 if answer.capitalize() in list(movie_genres.keys()):
-                        all_answers.append(answer.capitalize())
+                        answer = movie_genres[answer.capitalize()]
+                        all_answers.extend(answer)
                         break
 
                 else:
@@ -191,7 +192,7 @@ def calculate_scores(answers: list, villagers_lookup:dict) -> list:
         Calculating the scores for the answers with the use of the villager_lookup function.
         :param answers: all_answers from the run_quiz function.
         :param villagers_lookup: The dictionary used to determine scores for each item in a villager's gifts' column
-        :return: A dictionary that has scores for each key (villager name) and value (score)
+        :return: A list that has scores for each key (villager name) and value (score)
         """
         all_villager_score = []
 
@@ -208,22 +209,25 @@ def calculate_scores(answers: list, villagers_lookup:dict) -> list:
 def show_results(database, scores):
         """"
         Showing the results, with the most compatible villager is rank 1.
-        :param databaase: DataFrame imported from the notebook. It should contain all the data values of each villager
+        :param database: DataFrame imported from the notebook. It should contain all the data values of each villager
         :param scores: results of all villager score from calculate_scores function
         """
         villager_results = database[['Name']].copy()
         villager_results['Score'] = scores
-        print(villager_results)
         highest_villager = villager_results.loc[villager_results['Score'].idxmax()]
-        print(highest_villager)
+        return villager_results, highest_villager
 
 def main() -> None:
         # loading / importing pkl file
         villagers_db = pd.read_pickle('data/villagers_clean.pkl')
+
         user_answers = run_quiz(villagers_db)
         villager_lookup = get_villager_lookup(villagers_db)
         scores = calculate_scores(user_answers, villager_lookup)
-        show_results(villagers_db, scores)
+        villager_results, highest_villager = show_results(villagers_db, scores)
+
+        print(villager_results)
+        print(highest_villager)
 
 if __name__ == '__main__':
     main()
