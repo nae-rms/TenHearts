@@ -186,7 +186,7 @@ def run_quiz(database) -> list:
 
         return all_answers
 
-def calculate_scores(answers: list, villagers_lookup:dict) -> dict:
+def calculate_scores(answers: list, villagers_lookup:dict) -> list:
         """
         Calculating the scores for the answers with the use of the villager_lookup function.
         :param answers: all_answers from the run_quiz function.
@@ -205,11 +205,17 @@ def calculate_scores(answers: list, villagers_lookup:dict) -> dict:
 
         return all_villager_score
 
-def show_results(scores) -> str:
+def show_results(database, scores):
         """"
         Showing the results, with the most compatible villager is rank 1.
-        :param scores:
+        :param databaase: DataFrame imported from the notebook. It should contain all the data values of each villager
+        :param scores: results of all villager score from calculate_scores function
         """
+        villager_results = database[['Name']].copy()
+        villager_results['Score'] = scores
+        print(villager_results)
+        highest_villager = villager_results.loc[villager_results['Score'].idxmax()]
+        print(highest_villager)
 
 def main() -> None:
         # loading / importing pkl file
@@ -217,7 +223,7 @@ def main() -> None:
         user_answers = run_quiz(villagers_db)
         villager_lookup = get_villager_lookup(villagers_db)
         scores = calculate_scores(user_answers, villager_lookup)
-        show_results(scores)
+        show_results(villagers_db, scores)
 
 if __name__ == '__main__':
     main()
